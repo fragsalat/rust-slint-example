@@ -1,0 +1,14 @@
+import { UILibraryEntry, Helper } from "./common.slint";
+import { Content, ContentView } from "./content.slint";
+import { Messages,MessagesView } from "./messages.slint";
+
+export { UILibraryEntry, Helper }
+export { Content, Messages }
+
+export component AppWindow inherits Window {
+    preferred-width: 800px;
+    preferred-height: 480px;
+
+    ContentView { }
+    MessagesView { }
+}

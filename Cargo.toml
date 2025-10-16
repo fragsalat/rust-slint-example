@@ -1,0 +1,15 @@
+[package]
+name = "rust-slint-music-player"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+slint = { version = "1.13.1" }
+tokio = { version = "1.47.1", features = ["full"] }
+chrono = { version = "0.4.42", features = ["serde"] }
+serde = { version = "1.0.228", features = ["derive"] }
+base64 = "0.22.1"
+image = "*"
+
+[build-dependencies]
+slint-build = { version = "1.13.1", features = ["default"] }

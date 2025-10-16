@@ -1,0 +1,14 @@
+
+export global Helper {
+    pure callback get_image([int]) -> image;
+}
+
+export struct UILibraryEntry {
+    id: int,
+    parent_id: int,
+    variant: string,
+    name: string,
+    played_at: string,
+    image: [int],
+    sort_key: int,
+}

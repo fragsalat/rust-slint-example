@@ -1,0 +1,56 @@
+import { VerticalBox, HorizontalBox } from "std-widgets.slint";
+import {UILibraryEntry, Helper} from "common.slint";
+
+export global Content {
+    in-out property <[[UILibraryEntry]]> rows;
+}
+
+component Tile {
+    in property <int> id;
+    in property <int> parent_id;
+    in property <string> variant;
+    in property <string> name;
+    in property <string> played_at;
+    in property <[int]> image;
+    in property <int> sort_key;
+
+    VerticalBox {
+        Image {
+            source: Helper.get_image(image);
+            width: 180px;
+            height: 180px;
+        }
+
+        Text {
+            text: name;
+            font-size: 14px;
+        }
+
+        Text {
+            text: played_at;
+            font-size: 12px;
+            color: gray;
+        }
+    }
+}
+
+export component ContentView {
+    Text {
+        text: "Content View - Rows: " + Content.rows.length;
+        font-size: 24px;
+        horizontal-alignment: center;
+    }
+    VerticalBox {
+        for row in Content.rows: HorizontalBox {
+            for entry in row: Tile {
+                id: entry.id;
+                parent_id: entry.parent_id;
+                variant: entry.variant;
+                name: entry.name;
+                played_at: entry.played_at;
+                image: entry.image;
+                sort_key: entry.sort_key;
+            }
+        }
+    }
+}
