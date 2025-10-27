@@ -16,30 +16,43 @@ macro_rules! with_getters_setters {
             )*
         }
     ) => {
+        #[warn(dead_code)]
         // ---- Inner struct definition ----
         $(#[$meta])*
         $inner_vis struct $Inner {
+            changes: Vec<Field>,
             $(
                 $(#[$field_meta])*
                 $field_vis $field : $ty,
             )*
         }
 
-        // ---- Outer struct definition ----
         #[derive(Clone)]
-        $outer_vis struct $Outer {
-            pub inner: std::sync::Arc<std::sync::Mutex<$Inner>>,
-            $(
-                $(#[$outer_field_meta])*
-                $outer_field_vis $outer_field : $outer_ty,
-            )*
-        }
-
         $outer_vis enum Field {
             $(
                 $field($ty),
             )*
         }
+
+        impl $Inner {
+            pub fn set(&mut self, field: Field) {
+                match field.clone() {
+                    $(Field::$field(value) => self.$field = value,)*
+                }
+                self.changes.push(field);
+            }
+        }
+
+
+        // ---- Outer struct definition ----
+        #[derive(Clone)]
+        $outer_vis struct $Outer {
+            pub(super) inner: std::sync::Arc<std::sync::Mutex<$Inner>>,
+            $(
+                $(#[$outer_field_meta])*
+                $outer_field_vis $outer_field : $outer_ty,
+            )*
+        }        
 
         // ---- Impl for outer struct ----
         impl $Outer {
@@ -51,12 +64,6 @@ macro_rules! with_getters_setters {
                     self.inner.lock().unwrap().$field.clone()
                 }
             )*
-
-            pub fn set(&self, field: Field) {
-                match field {
-                    $(Field::$field(value) => self.inner.lock().unwrap().$field = value,)*
-                }
-            }
         }
     };
 }

@@ -5,6 +5,8 @@ use std::error::Error;
 use image::{GenericImageView, ImageReader};
 use slint::{Image, Model, ModelRc, SharedPixelBuffer};
 
+use crate::mock::PlayerEvent;
+
 slint::include_modules!();
 
 // mod controllers;
@@ -15,18 +17,28 @@ mod view_model;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let ui = AppWindow::new()?;
-    let state = model::State::new();
+    let player = mock::Player::new();
+    let state = model::State::new(player);
+
+    {
+        let state = state.clone();
+        player.subscribe(move |event| {
+            match event {
+                PlayerEvent::Playing(library_entry) => state.dispatch(id)
+            }
+        });
+    }
     
     // Erstelle ContentVM - UI muss stark referenziert bleiben
     let _content_vm = view_model::content::ContentVM::new(ui.as_weak(), state.clone());
     let _messages_vm = view_model::messages::MessagesVM::new(ui.as_weak(), state.clone());
+    let _navbar_vm = view_model::navbar::NavbarVM::new(ui.as_weak(), state.clone());
     
     // Zugriff auf Content Global
     let _content_global = ui.global::<Content>();
     
     // Lade Test-Daten
     state.dispatch(model::actions::Action::LoadLibraryEntry(0));
-
 
     // let controller = controllers::ContentController::new(ui.clone(), state);
 

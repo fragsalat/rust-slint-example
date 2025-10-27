@@ -1,0 +1,68 @@
+import {Button, HorizontalBox} from "std-widgets.slint";
+import {Theme} from "./theme.slint";
+
+
+export global Navbar {
+  in property <bool> visible: false;
+  in property <int> parent-id: 0;
+  in property <string> entry-name: "Music";
+  callback go-back(int /* index */);    
+}
+
+export component NavbarView {
+  // height: Navbar.visible ? 50px : 0px;
+  height: Navbar.visible ? 70px : 0px;
+  opacity: Navbar.visible ? 1.0 : 0.0;
+
+  animate opacity {
+    duration: 200ms;
+    easing: ease-in-out;       
+  }
+
+  Rectangle {
+    width: parent.width;
+    background: Theme.background-accent-color;
+    HorizontalBox {
+      padding: 0;
+      height: parent.height;
+      // spacing: 24px;
+      Rectangle {
+        width: txt.width + 80px;
+        height: parent.height;
+        txt := Text {
+          height: parent.height;
+          text: "‹";
+          font-size: 48px;
+          color: Theme.text-color;
+          y: -4px; // Fix icon not aligned properly with the font family
+        }
+        TouchArea {
+          clicked => {
+              Navbar.go-back(Navbar.parent-id);
+          }
+        }
+      }
+
+      // Text {
+      //     text: Navbar.parent-name;
+      //     color: Theme.text-color;
+      //     font-size: 20px;
+      //     vertical-alignment: center;
+      // }
+      Text {
+        height: parent.height;
+        text: Navbar.entry-name;
+        color: Theme.text-color;
+        font-size: 24px;
+        // font-weight: 200;
+        vertical-alignment: center;
+      }
+    }
+    Rectangle {
+      width: parent.width;
+      height: 1px;
+      y: parent.height - self.height;
+      background: Theme.border-color;
+    }
+  }   
+}

@@ -1,0 +1,67 @@
+
+import { VerticalBox, HorizontalBox, ScrollView } from "std-widgets.slint";
+import { Theme } from "./theme.slint";
+import { UILibraryEntry, Helper } from "./common.slint";
+
+export component ListItem {
+    in property <int> list_index;
+    in property <int> id;
+    in property <int> parent_id;
+    in property <string> variant;
+    in property <string> name;
+    in property <string> played_at;
+    in property <[int]> image;
+    in property <int> sort_key;
+    callback clicked(int /* id */);
+
+    TouchArea {
+        width: parent.width;
+        height: parent.height;
+        clicked => {
+            root.clicked(root.id);
+        }
+    }
+
+    HorizontalBox {
+        spacing: 10px;
+        Text {
+            text: "#" + list_index;
+            width: 40px;
+            font-size: 16px;
+            color: Theme.text-accent-color;
+        }
+
+        Text {
+            text: name;
+            font-size: 16px;
+            color: Theme.text-color;
+            horizontal-alignment: left;
+        }
+    }
+}
+
+export component DetailListView {
+    in property <[UILibraryEntry]> rows: [];
+    callback entry-clicked(int /* id */);
+
+    width: 100%;
+    height: 100%;
+    ScrollView {
+        VerticalBox {
+            alignment: start;
+            for entry[index] in rows: ListItem {
+                list_index: index + 1;
+                id: entry.id;
+                parent_id: entry.parent_id;
+                variant: entry.variant;
+                name: entry.name;
+                played_at: entry.played_at;
+                image: entry.image;
+                sort_key: entry.sort_key;
+                clicked => {
+                    entry-clicked(entry.id);
+                }
+            }
+        }
+    }
+}

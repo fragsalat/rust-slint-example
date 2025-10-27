@@ -1,56 +1,32 @@
-import { VerticalBox, HorizontalBox } from "std-widgets.slint";
-import {UILibraryEntry, Helper} from "common.slint";
+import { VerticalBox, HorizontalBox, ScrollView } from "std-widgets.slint";
+import { UILibraryEntry, Helper } from "./common.slint";
+import { Theme } from "./theme.slint";
+import { TileListView } from "./tile_list_view.slint";
+import { DetailListView } from "detail_list_view.slint";
 
 export global Content {
-    in-out property <[[UILibraryEntry]]> rows;
-}
-
-component Tile {
-    in property <int> id;
-    in property <int> parent_id;
-    in property <string> variant;
-    in property <string> name;
-    in property <string> played_at;
-    in property <[int]> image;
-    in property <int> sort_key;
-
-    VerticalBox {
-        Image {
-            source: Helper.get_image(image);
-            width: 180px;
-            height: 180px;
-        }
-
-        Text {
-            text: name;
-            font-size: 14px;
-        }
-
-        Text {
-            text: played_at;
-            font-size: 12px;
-            color: gray;
-        }
-    }
+    in property <string> variant: "spotify";
+    in property <[[UILibraryEntry]]> tile-rows: [[{id: 0, parent_id: 0, variant: "folder", name: "test", played_at: "", image: [], sort_key: 0}]];
+    in property <[UILibraryEntry]> detail-rows: [{id: 0, parent_id: 0, variant: "folder", name: "test", played_at: "", image: [], sort_key: 0}];
+    callback select-library-entry(int /* id */);
 }
 
 export component ContentView {
-    Text {
-        text: "Content View - Rows: " + Content.rows.length;
-        font-size: 24px;
-        horizontal-alignment: center;
-    }
-    VerticalBox {
-        for row in Content.rows: HorizontalBox {
-            for entry in row: Tile {
-                id: entry.id;
-                parent_id: entry.parent_id;
-                variant: entry.variant;
-                name: entry.name;
-                played_at: entry.played_at;
-                image: entry.image;
-                sort_key: entry.sort_key;
+    height: 100%;
+    width: 100%;
+
+    if Content.variant == "folder" || Content.variant == "stream":
+        TileListView {
+            rows: Content.tile-rows;
+            entry-clicked(id) => {
+                Content.select-library-entry(id);
             }
         }
-    }
+    if Content.variant != "folder" && Content.variant != "stream":
+        DetailListView {
+            rows: Content.detail-rows;
+            entry-clicked(id) => {
+                Content.select-library-entry(id);
+            }
+        }
 }

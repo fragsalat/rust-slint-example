@@ -1,14 +1,27 @@
 import { UILibraryEntry, Helper } from "./common.slint";
 import { Content, ContentView } from "./content.slint";
 import { Messages,MessagesView } from "./messages.slint";
+import { Navbar, NavbarView } from "./navbar.slint";
+import { Theme } from "./theme.slint";
+import { VerticalBox } from "std-widgets.slint";
 
 export { UILibraryEntry, Helper }
-export { Content, Messages }
+export { Content, Messages, Navbar }
 
 export component AppWindow inherits Window {
     preferred-width: 800px;
     preferred-height: 480px;
+    background: Theme.background-color;
 
-    ContentView { }
-    MessagesView { }
+    VerticalBox {
+        height: parent.height;
+        padding: 0;
+        NavbarView {
+        }   
+        ContentView {
+        }
+    }
+    
+    MessagesView {
+    }
 }

@@ -1,22 +1,18 @@
-use crate::{mock::get_library_entry, model::{actions::StateChange, state::State}};
+use crate::{mock::get_library_entry, model::{actions::StateChange, state::{Field, State}}};
 
 impl State {
-    pub fn load_library_entry(&mut self, id: i32) -> StateChange {
+    pub(in crate::model) fn load_library_entry(&mut self, id: i32) {
         let mut inner = self.inner.lock().unwrap();
         match get_library_entry(id) {
             Some(entry) => {
                 println!("Loaded library entry: {:?}", entry);
-                inner.library_entry = Some(entry);
-                StateChange {
-                    changed_fields: vec!["library_entry".into()],
-                }
+                inner.set(Field::active_library_entry(Some(entry)));
             }
             None => {
                 println!("Library entry with id {} not found", id);
-                inner.messages.push(format!("Library entry with id {} not found", id));
-                StateChange {
-                    changed_fields: vec!["messages".into()],
-                }
+                let mut new_messages = inner.messages.clone();
+                new_messages.push(format!("Library entry with id {} not found", id));
+                inner.set(Field::messages(new_messages));
             }
         }
     }
